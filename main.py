@@ -19,7 +19,8 @@ class AnalyzeInput(BaseModel):
 
 @app.post("/analyze/")
 async def analyze(input: AnalyzeInput):
-    response = requests.get(input.file_url)
+    #response = requests.get(input.file_url)
+    response = requests.get(input.file_url, allow_redirects=True)
     if response.status_code != 200:
         return {"error": "文件下载失败"}
     df = pd.read_excel(BytesIO(response.content), engine="openpyxl")
