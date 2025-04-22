@@ -2,19 +2,27 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 import pandas as pd
 import numpy as np
+from pydantic import BaseModel
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn.ensemble import IsolationForest
 from sklearn.metrics import silhouette_score
 from io import BytesIO
 import gc
+import requests
 
 app = FastAPI()
 
+# 定义输入模型
+class AnalyzeInput(BaseModel):
+    file_url: str
+
 @app.post("/analyze/")
-async def analyze(file: UploadFile = File(...)):
-    content = await file.read()
-    df = pd.read_excel(BytesIO(content), engine="openpyxl")
+async def analyze(input: AnalyzeInput):
+    response = requests.get(input.file_url)
+    if response.status_code != 200:
+        return {"error": "文件下载失败"}
+    df = pd.read_excel(BytesIO(response.content), engine="openpyxl")
 
     # 预处理与聚类逻辑（你的核心代码）
     df.columns = df.columns.str.lower()
