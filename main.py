@@ -121,4 +121,5 @@ async def analyze(input: AnalyzeInput):
     gc.collect()
 
     # 返回 JSON 数据
-    return JSONResponse(content=result.to_dict(orient="records"))
+    #return JSONResponse(content=result.to_dict(orient="records"))
+    return JSONResponse(content={"res": result.to_dict(orient="records")})
